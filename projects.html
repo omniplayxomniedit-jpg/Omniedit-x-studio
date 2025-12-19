@@ -257,22 +257,24 @@
         const navbar = document.getElementById('navbar');
         navbar.style.transform = 'translateY(0)';
 
-        // Load Projects Items
+        // Load Projects Items from videos/ folder
         const items = JSON.parse(localStorage.getItem('projects') || '[]');
         const grid = document.getElementById('projects-grid');
 
         if (items.length === 0) {
-            grid.innerHTML = '<p class="no-items">No projects uploaded yet. Upload from Admin Panel.</p>';
+            grid.innerHTML = '<p class="no-items">No projects uploaded yet. Upload from Admin Panel and place file in videos/ folder.</p>';
         } else {
             items.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'project-item';
+
                 const media = item.type === 'video' 
                     ? `<video controls loop muted preload="metadata">
-                         <source src="${item.url}" type="${item.mime || 'video/mp4'}">
+                         <source src="videos/${item.filename}" type="${item.mime || 'video/mp4'}">
                          Your browser does not support the video tag.
                        </video>`
-                    : `<img src="${item.url}" alt="${item.title}">`;
+                    : `<img src="videos/${item.filename}" alt="${item.title}">`;
+
                 div.innerHTML = `
                     ${media}
                     <h3>${item.title}</h3>
