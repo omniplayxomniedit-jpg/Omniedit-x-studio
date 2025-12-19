@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Upload | OmniEdit X Studio</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --text: #ffffff;
+            --accent: #00d4ff;
+            --secondary: #b0b0b0;
+            --card: rgba(20, 20, 30, 0.6);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .simple-loader {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 8px solid rgba(0, 212, 255, 0.2);
+            border-top: 8px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .preloader-logo {
+            height: 130px;
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+            transition: transform 0.5s ease-in-out;
+            transform: translateY(-100%);
+        }
+        nav.visible {
+            transform: translateY(0);
+        }
+        .logo-img {
+            height: 50px;
+            transition: transform 0.4s ease;
+        }
+        .logo-img:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            margin-left: 40px;
+            font-size: 18px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.4s ease;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -6px;
+            left: 0;
+            background: var(--accent);
+            transition: width 0.4s ease;
+        }
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Admin Section */
+        .admin-section {
+            flex: 1;
+            padding: 150px 20px 100px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .admin-title {
+            font-size: 82px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #ffffff, var(--accent), #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1.2s ease forwards 0.5s, breathe 5s ease-in-out infinite 2s;
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes breathe {
+            0%, 100% { text-shadow: 0 0 25px rgba(0, 212, 255, 0.5); }
+            50% { text-shadow: 0 0 60px rgba(0, 212, 255, 1); }
+        }
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 50px;
+            max-width: 1200px;
+            margin: 60px auto;
+        }
+        .upload-card {
+            background: var(--card);
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.8s ease;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(60px);
+            animation: fadeInUp 1s ease forwards;
+        }
+        .upload-card:nth-child(1) { animation-delay: 0.8s; }
+        .upload-card:nth-child(2) { animation-delay: 1s; }
+        .upload-card:hover {
+            transform: translateY(-30px);
+            border-color: var(--accent);
+            box-shadow: 0 40px 80px rgba(0, 212, 255, 0.5);
+        }
+        .form-group {
+            margin-bottom: 35px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-size: 19px;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 18px;
+            background: rgba(10, 10, 15, 0.8);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            color: var(--text);
+            font-size: 18px;
+            transition: all 0.4s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+            outline: none;
+        }
+        .submit-btn {
+            padding: 20px 70px;
+            font-size: 26px;
+            background: transparent;
+            color: var(--accent);
+            border: 4px solid var(--accent);
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.7s ease;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.4);
+        }
+        .submit-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            transform: translateY(-12px);
+            box-shadow: 0 0 80px rgba(0, 212, 255, 0.9);
+        }
+
+        /* New: Progress Indicator */
+        .progress-container {
+            margin: 30px 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar {
+            height: 30px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), #00ffff);
+            border-radius: 15px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.8);
+        }
+        .progress-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 20px;
+            color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            padding: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            border-top: 1px solid #222;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="loader-container">
+            <div class="simple-loader"></div>
+            <img src="logo.png" alt="OmniEdit X Studio Logo" class="preloader-logo">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="index.html"><img src="logo.png" alt="OmniEdit X Studio Logo" class="logo-img"></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="projects.html">Projects</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Admin Upload Section -->
+    <section class="admin-section">
+        <h1 class="admin-title">ADMIN UPLOAD</h1>
+        <div class="upload-grid">
+            <div class="upload-card">
+                <h3 style="color: var(--accent); margin-bottom: 30px;">Upload to Gallery</h3>
+                <div class="form-group">
+                    <label for="gallery-title">Title</label>
+                    <input type="text" id="gallery-title" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                    <label for="gallery-details">Details</label>
+                    <textarea id="gallery-details" rows="4" placeholder="Enter details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="gallery-file">File (Image/Video)</label>
+                    <input type="file" id="gallery-file" accept="image/*,video/*">
+                </div>
+                <!-- Progress for Gallery -->
+                <div class="progress-container" id="gallery-progress-container">
+                    <div class="progress-bar" id="gallery-progress-bar"></div>
+                </div>
+                <div class="progress-text" id="gallery-progress-text">0% - Ready</div>
+                <button class="submit-btn" onclick="upload('gallery')">Upload to Gallery</button>
+            </div>
+            <div class="upload-card">
+                <h3 style="color: var(--accent); margin-bottom: 30px;">Upload to Projects</h3>
+                <div class="form-group">
+                    <label for="projects-title">Title</label>
+                    <input type="text" id="projects-title" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                    <label for="projects-details">Details</label>
+                    <textarea id="projects-details" rows="4" placeholder="Enter details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projects-file">File (Image/Video)</label>
+                    <input type="file" id="projects-file" accept="image/*,video/*">
+                </div>
+                <!-- Progress for Projects -->
+                <div class="progress-container" id="projects-progress-container">
+                    <div class="progress-bar" id="projects-progress-bar"></div>
+                </div>
+                <div class="progress-text" id="projects-progress-text">0% - Ready</div>
+                <button class="submit-btn" onclick="upload('projects')">Upload to Projects</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        © 2025 OmniEdit X Studio. All rights reserved. | Proudly Created & Edited by Sajeeb Sarker, Bogura, Bangladesh
+    </footer>
+
+    <script>
+        // Preloader
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+            }, 800);
+        });
+
+        // Navbar scroll hide
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > 0) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+        });
+
+        // Upload with progress
+        function upload(type) {
+            const title = document.getElementById(type + '-title').value.trim();
+            const details = document.getElementById(type + '-details').value.trim();
+            const file = document.getElementById(type + '-file').files[0];
+
+            if (!title || !details || !file) {
+                alert('Please fill all fields and select a file');
+                return;
+            }
+
+            const progressContainer = document.getElementById(type + '-progress-container');
+            const progressBar = document.getElementById(type + '-progress-bar');
+            const progressText = document.getElementById(type + '-progress-text');
+
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressText.textContent = '0% - Starting...';
+
+            const reader = new FileReader();
+            const startTime = Date.now();
+
+            reader.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percent + '%';
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    const speed = e.loaded / elapsed;
+                    const remaining = (e.total - e.loaded) / speed;
+                    progressText.textContent = `${percent}% - ~${remaining.toFixed(1)}s remaining`;
+                }
+            };
+
+            reader.onload = (e) => {
+                const item = {
+                    title,
+                    details,
+                    url: e.target.result,
+                    type: file.type.startsWith('video') ? 'video' : 'image',
+                    mime: file.type
+                };
+                let data = JSON.parse(localStorage.getItem(type) || '[]');
+                data.push(item);
+                localStorage.setItem(type, JSON.stringify(data));
+
+                progressBar.style.width = '100%';
+                progressText.textContent = '100% - Complete!';
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    alert('Uploaded successfully!');
+                    document.getElementById(type + '-title').value = '';
+                    document.getElementById(type + '-details').value = '';
+                    document.getElementById(type + '-file').value = '';
+                }, 600);
+            };
+
+            reader.onerror = () => {
+                alert('Upload failed');
+                progressContainer.style.display = 'none';
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="OmniEdit X Studio - Professional Video Editor specializing in cinematic edits, music videos, commercials, motion graphics, and high-impact visual storytelling.">
+    <meta name="keywords" content="video editing, video editor, OmniEdit X Studio, cinematic editing, music video editor, motion graphics, premiere pro, after effects, professional video editor, portfolio">
+    <meta name="author" content="OmniEdit X Studio">
+    <meta name="robots" content="index, follow">
+
+    <!-- Page Title -->
+    <title>Home | OmniEdit X Studio</title>
+
+    <!-- Favicon - This will show your logo in browser tab -->
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --text: #ffffff;
+            --accent: #00d4ff;
+            --secondary: #b0b0b0;
+            --card: rgba(20, 20, 30, 0.6);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Preloader - Bigger logo with orbiting spinner */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .simple-loader {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 8px solid rgba(0, 212, 255, 0.2);
+            border-top: 8px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .preloader-logo {
+            height: 130px;
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        #navbar {
+            transition: transform 0.4s ease-in-out;
+            transform: translateY(0);
+        }
+        #navbar.hidden {
+            transform: translateY(-100%);
+        }
+        .logo-img {
+            height: 50px;
+            transition: transform 0.4s ease;
+        }
+        .logo-img:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            margin-left: 40px;
+            font-size: 18px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.4s ease;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -6px;
+            left: 0;
+            background: var(--accent);
+            transition: width 0.4s ease;
+        }
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 50px;
+        }
+        .welcome-intro {
+            font-size: 34px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.8s;
+        }
+        .welcome-text {
+            font-size: 92px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #ffffff, var(--accent), #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1.2s ease forwards 1.2s,
+                       breathe 4s ease-in-out infinite 3s;
+        }
+        .tagline {
+            font-size: 28px;
+            color: var(--secondary);
+            margin: 30px 0 20px;
+            max-width: 800px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 1.8s;
+        }
+        .intro-text {
+            font-size: 20px;
+            color: var(--secondary);
+            max-width: 700px;
+            margin: 40px 0 60px;
+            line-height: 1.8;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 2.2s;
+        }
+        .cta-btn {
+            padding: 18px 50px;
+            font-size: 22px;
+            font-weight: 600;
+            background: transparent;
+            color: var(--accent);
+            border: 3px solid var(--accent);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 2.6s;
+        }
+        .cta-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.6);
+            transform: translateY(-5px);
+        }
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.8s, height 0.8s;
+        }
+        .cta-btn:active::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        /* Services */
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 80px 20px 60px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 3s;
+        }
+        .service-card {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            padding: 35px 25px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.6s ease;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .service-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.2);
+            border-color: var(--accent);
+        }
+        .service-card i {
+            font-size: 45px;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        .service-card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+        .service-card p {
+            color: var(--secondary);
+            font-size: 15px;
+        }
+
+        /* Featured Reel */
+        .reel-section {
+            padding: 80px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, var(--bg), rgba(10,10,15,0.8));
+        }
+        .reel-section h2 {
+            font-size: 48px;
+            margin-bottom: 40px;
+            background: linear-gradient(90deg, #ffffff, var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .video-reel {
+            max-width: 1000px;
+            margin: 0 auto;
+            border: 4px solid var(--accent);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
+        }
+        .video-reel video {
+            width: 100%;
+            height: auto;
+            min-height: 560px;
+            background: #000;
+            display: block;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 100px 20px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .about-section h2 {
+            font-size: 48px;
+            margin-bottom: 40px;
+            background: linear-gradient(90deg, #ffffff, var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .about-text {
+            font-size: 20px;
+            line-height: 1.8;
+            color: var(--secondary);
+            margin-bottom: 40px;
+        }
+        .skills {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .skill-item {
+            background: var(--card);
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 18px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+        .skill-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            padding: 30px;
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+            border-top: 1px solid #222;
+            margin-top: auto;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes breathe { 0%, 100% { text-shadow: 0 0 20px rgba(0, 212, 255, 0.4); } 50% { text-shadow: 0 0 40px rgba(0, 212, 255, 0.8); } }
+
+        @media (max-width: 768px) {
+            .welcome-text { font-size: 58px; }
+            .services { grid-template-columns: 1fr; }
+            .video-reel video { min-height: 300px; }
+            .loader-container { width: 140px; height: 140px; }
+            .simple-loader { width: 140px; height: 140px; }
+            .preloader-logo { height: 100px; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="loader-container">
+            <div class="simple-loader"></div>
+            <img src="logo.png" alt="OmniEdit X Studio Logo" class="preloader-logo">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="index.html"><img src="logo.png" alt="OmniEdit X Studio Logo" class="logo-img"></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="projects.html">Projects</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <p class="welcome-intro">Welcome to</p>
+        <h1 class="welcome-text">OMNIEDIT X STUDIO</h1>
+        <p class="tagline">Professional Video Editing • Cinematic Storytelling • Motion Design</p>
+        <p class="intro-text">I transform raw footage into powerful visual stories. Specializing in music videos, commercials, YouTube content, and cinematic edits with expert color grading and motion graphics.</p>
+        <a href="projects.html" class="cta-btn">View My Projects</a>
+
+        <!-- Services -->
+        <div class="services">
+            <div class="service-card">
+                <i class="fas fa-video"></i>
+                <h3>Video Editing</h3>
+                <p>Fast-paced cuts, smooth transitions, and perfect timing for maximum impact.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-palette"></i>
+                <h3>Color Grading</h3>
+                <p>Cinematic looks, mood enhancement, and professional color correction.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-bolt"></i>
+                <h3>Motion Graphics</h3>
+                <p>Dynamic text animations, VFX, and custom elements using After Effects.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-music"></i>
+                <h3>Music Videos</h3>
+                <p>Creative sync, visual effects, and storytelling tailored to the beat.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-ad"></i>
+                <h3>Commercials</h3>
+                <p>High-energy ads that capture attention and drive results.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-film"></i>
+                <h3>Cinematic Edits</h3>
+                <p>Epic storytelling with professional pacing and emotional depth.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Showreel -->
+    <section class="reel-section">
+        <h2>My Showreel</h2>
+        <div class="video-reel">
+            <video controls autoplay muted loop playsinline poster="poster.jpg">
+                <source src="video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <h2>About Me</h2>
+        <p class="about-text">I'm a passionate new video editor with 1 year of hands-on experience, eager to bring fresh ideas and creativity to every project. I specialize in Adobe Premiere Pro and After Effects, crafting engaging edits, motion graphics, and cinematic visuals. I'm just starting my professional journey and excited to collaborate on your next video!</p>
+        <div class="skills">
+            <div class="skill-item">Premiere Pro</div>
+            <div class="skill-item">After Effects</div>
+            <div class="skill-item">Motion Graphics</div>
+            <div class="skill-item">Color Grading</div>
+            <div class="skill-item">Video Editing</div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        © 2025 OmniEdit X Studio. All rights reserved.
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Preloader fade out
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+            }, 800);
+        });
+
+        // Navbar: Hide when scrolling down, show ONLY when scrolled all the way to the top
+        const navbar = document.getElementById('navbar');
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > 0) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="About Sajeeb Sarker - CEO & Video Editor at OmniEdit X Studio">
+    <meta name="keywords" content="about, Sajeeb Sarker, video editor, OmniEdit X Studio, After Effects, Premiere Pro">
+    <meta name="author" content="OmniEdit X Studio">
+    <meta name="robots" content="index, follow">
+
+    <title>About | OmniEdit X Studio</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --text: #ffffff;
+            --accent: #00d4ff;
+            --secondary: #b0b0b0;
+            --card: rgba(20, 20, 30, 0.6);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .simple-loader {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 8px solid rgba(0, 212, 255, 0.2);
+            border-top: 8px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .preloader-logo {
+            height: 130px;
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Navigation - Hidden until scroll to top */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+            transition: transform 0.5s ease-in-out;
+            transform: translateY(-100%);
+        }
+        nav.visible {
+            transform: translateY(0);
+        }
+        .logo-img {
+            height: 50px;
+            transition: transform 0.4s ease;
+        }
+        .logo-img:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            margin-left: 40px;
+            font-size: 18px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.4s ease;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -6px;
+            left: 0;
+            background: var(--accent);
+            transition: width 0.4s ease;
+        }
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* About Section */
+        .about-section {
+            flex: 1;
+            padding: 150px 20px 100px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .about-title {
+            font-size: 82px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #ffffff, var(--accent), #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1.2s ease forwards 0.5s, breathe 5s ease-in-out infinite 2s;
+        }
+        .bio-text {
+            font-size: 22px;
+            line-height: 1.9;
+            color: var(--secondary);
+            max-width: 900px;
+            margin: 40px auto;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeInUp 1.2s ease forwards 0.8s;
+        }
+        .highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 80px auto;
+        }
+        .info-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.6s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        .info-card:nth-child(1) { animation: fadeInUp 1s ease forwards 1s; }
+        .info-card:nth-child(2) { animation: fadeInUp 1s ease forwards 1.2s; }
+        .info-card:nth-child(3) { animation: fadeInUp 1s ease forwards 1.4s; }
+        .info-card:hover {
+            transform: translateY(-15px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.3);
+        }
+        .info-card h3 {
+            font-size: 26px;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        .skill-tags {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 60px 0;
+        }
+        .skill-tag {
+            background: var(--card);
+            padding: 14px 34px;
+            border-radius: 50px;
+            font-size: 19px;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .skill-tag:nth-child(1) { animation: fadeInUp 0.8s ease forwards 1.8s; }
+        .skill-tag:nth-child(2) { animation: fadeInUp 0.8s ease forwards 1.9s; }
+        .skill-tag:nth-child(3) { animation: fadeInUp 0.8s ease forwards 2s; }
+        .skill-tag:nth-child(4) { animation: fadeInUp 0.8s ease forwards 2.1s; }
+        .skill-tag:nth-child(5) { animation: fadeInUp 0.8s ease forwards 2.2s; }
+        .skill-tag:nth-child(6) { animation: fadeInUp 0.8s ease forwards 2.3s; }
+        .skill-tag:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 35px rgba(0, 212, 255, 0.7);
+            transform: scale(1.15) rotate(5deg);
+        }
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 50px;
+            max-width: 1300px;
+            margin: 80px auto;
+        }
+        .visual-item {
+            background: var(--card);
+            border-radius: 25px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(80px) scale(0.9);
+        }
+        .visual-item:nth-child(1) { animation: pullIn 1.2s ease forwards 2.2s; }
+        .visual-item:nth-child(2) { animation: pullIn 1.2s ease forwards 2.4s; }
+        .visual-item:nth-child(3) { animation: pullIn 1.2s ease forwards 2.6s; }
+        .visual-item:nth-child(4) { animation: pullIn 1.2s ease forwards 2.8s; }
+        .visual-item:hover {
+            transform: translateY(-30px) scale(1.08);
+            box-shadow: 0 40px 80px rgba(0, 212, 255, 0.6);
+            border-color: var(--accent);
+        }
+        .visual-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.8s ease;
+        }
+        .visual-item:hover img {
+            transform: scale(1.1);
+        }
+        .cta-section {
+            margin: 100px 0;
+        }
+        .cta-btn-large {
+            padding: 22px 70px;
+            font-size: 28px;
+            font-weight: 700;
+            background: transparent;
+            color: var(--accent);
+            border: 4px solid var(--accent);
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.7s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.4);
+            opacity: 0;
+            transform: scale(0.8);
+            animation: fadeInUp 1s ease forwards 3s, pulseGlow 3s ease-in-out infinite 4s;
+        }
+        .cta-btn-large:hover {
+            background: var(--accent);
+            color: var(--bg);
+            transform: translateY(-12px) scale(1.1);
+            box-shadow: 0 0 80px rgba(0, 212, 255, 0.9);
+        }
+        .gallery-btn {
+            display: inline-block;
+            margin: 25px;
+            padding: 16px 45px;
+            background: transparent;
+            color: var(--accent);
+            border: 3px solid var(--accent);
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 21px;
+            transition: all 0.5s ease;
+        }
+        .gallery-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.6);
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px;
+            text-align: center;
+            color: #666;
+            font-size: 15px;
+            border-top: 1px solid #222;
+            margin-top: auto;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes breathe {
+            0%, 100% { text-shadow: 0 0 25px rgba(0, 212, 255, 0.5); }
+            50% { text-shadow: 0 0 60px rgba(0, 212, 255, 1); }
+        }
+        @keyframes pullIn {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 50px rgba(0, 212, 255, 0.4); }
+            50% { box-shadow: 0 0 80px rgba(0, 212, 255, 0.8); }
+        }
+
+        @media (max-width: 768px) {
+            .about-title { font-size: 56px; }
+            .bio-text { font-size: 19px; }
+            .info-grid, .visual-grid { grid-template-columns: 1fr; }
+            .cta-btn-large { font-size: 24px; padding: 18px 50px; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="loader-container">
+            <div class="simple-loader"></div>
+            <img src="logo.png" alt="OmniEdit X Studio Logo" class="preloader-logo">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="index.html"><img src="logo.png" alt="OmniEdit X Studio Logo" class="logo-img"></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="projects.html">Projects</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <h1 class="about-title">ABOUT ME</h1>
+
+        <p class="bio-text">
+            Hey, I'm <span class="highlight">Sajeeb Sarker</span>, the CEO and passionate lead video editor at OmniEdit X Studio.<br><br>
+            At 22 years old, I'm a driven creative from <span class="highlight">Bogura, Bangladesh</span>, currently pursuing my Bachelor's degree (3rd year) at <span class="highlight">Azizul Haque College</span>. 
+            With 1.5 years of intensive hands-on experience in video editing, I transform raw footage into cinematic masterpieces using Adobe Premiere Pro and After Effects.<br><br>
+            I hold professional certificates in Computer Applications and Advanced Video Editing courses, which strengthened my technical foundation and fueled my love for storytelling through motion.
+        </p>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                <p>Bachelor's Degree (3rd Year)<br>Azizul Haque College<br>Bogura, Bangladesh</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fas fa-certificate"></i> Certifications</h3>
+                <p>Advanced Video Editing Course<br>Computer Application & Office Management</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fas fa-map-marker-alt"></i> Location</h3>
+                <p>Bogura<br>Bangladesh</p>
+            </div>
+        </div>
+
+        <div class="skill-tags">
+            <div class="skill-tag">Premiere Pro Expert</div>
+            <div class="skill-tag">After Effects Master</div>
+            <div class="skill-tag">Motion Graphics</div>
+            <div class="skill-tag">Color Grading</div>
+            <div class="skill-tag">Cinematic Editing</div>
+            <div class="skill-tag">VFX & Transitions</div>
+        </div>
+
+        <p class="bio-text">
+            My journey started with a deep passion for visual storytelling — turning ordinary clips into powerful, emotional experiences. 
+            Precision, creativity, and attention to detail are at the heart of everything I do. Even with my young career, clients trust me to deliver professional, high-impact results every time.<br><br>
+            Want to see my creative edits? Check the <a href="gallery.html" class="gallery-btn">Gallery</a><br>
+            For real client projects and testimonials, visit <a href="projects.html" class="gallery-btn">Projects</a>
+        </p>
+
+        <div class="visual-grid">
+            <div class="visual-item">
+                <img src="https://w0.peakpx.com/wallpaper/838/32/HD-wallpaper-adobe-premiere-pro-video-editing-app-technology.jpg" alt="Futuristic Premiere Pro Timeline">
+            </div>
+            <div class="visual-item">
+                <img src="https://motionarray.imgix.net/preview-903787-xyKL9NnNOs-high_0003.jpg?w=660&q=60&fit=max&auto=format" alt="Sci-Fi After Effects Workspace">
+            </div>
+            <div class="visual-item">
+                <img src="https://blog.frame.io/wp-content/uploads/2023/03/B0561-resolve-node-setup-scaled.jpg" alt="Cinematic Color Grading Process">
+            </div>
+            <div class="visual-item">
+                <img src="https://www.makerstations.io/content/images/2022/04/gerwyn-manuel-desk-setup-07.jpg" alt="Cyberpunk Editor Desk Setup">
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="contact.html" class="cta-btn-large">Let's Create Something Epic – Contact Me Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        © 2025 OmniEdit X Studio. All rights reserved. | Proudly Created & Edited by Sajeeb Sarker, Bogura, Bangladesh
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Preloader
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+            }, 800);
+        });
+
+        // Navbar: Hidden by default, visible ONLY when at the very top
+        const navbar = document.getElementById('navbar');
+        function checkScroll() {
+            if (window.scrollY === 0) {
+                navbar.classList.add('visible');
+            } else {
+                navbar.classList.remove('visible');
+            }
+        }
+        window.addEventListener('scroll', checkScroll);
+        window.addEventListener('load', checkScroll);
+    </script>
+</body>
+</html>

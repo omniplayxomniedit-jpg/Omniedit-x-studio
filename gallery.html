@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery | OmniEdit X Studio</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --text: #ffffff;
+            --accent: #00d4ff;
+            --secondary: #b0b0b0;
+            --card: rgba(20, 20, 30, 0.6);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+        }
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .simple-loader {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 8px solid rgba(0, 212, 255, 0.2);
+            border-top: 8px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .preloader-logo {
+            height: 130px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+            transition: transform 0.5s ease-in-out;
+        }
+        .logo-img {
+            height: 50px;
+            transition: transform 0.4s ease;
+        }
+        .logo-img:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            margin-left: 40px;
+            font-size: 18px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.4s ease;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -6px;
+            left: 0;
+            background: var(--accent);
+            transition: width 0.4s ease;
+        }
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Gallery Section */
+        .gallery-section {
+            flex: 1;
+            padding: 150px 20px 100px;
+            text-align: center;
+        }
+        .gallery-title {
+            font-size: 82px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #ffffff, var(--accent), #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 80px;
+            animation: breathe 5s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0%, 100% { text-shadow: 0 0 25px rgba(0, 212, 255, 0.5); }
+            50% { text-shadow: 0 0 60px rgba(0, 212, 255, 1); }
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .gallery-item {
+            background: var(--card);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.8s ease;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+        .gallery-item:hover {
+            transform: translateY(-30px) scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 40px 80px rgba(0, 212, 255, 0.6);
+        }
+        .gallery-item img, .gallery-item video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+        .gallery-item:hover img, .gallery-item:hover video {
+            transform: scale(1.1);
+        }
+        .gallery-item h3 {
+            padding: 25px 20px 10px;
+            font-size: 24px;
+            color: var(--accent);
+        }
+        .gallery-item p {
+            padding: 0 20px 30px;
+            color: var(--secondary);
+            font-size: 16px;
+        }
+        .no-items {
+            color: var(--secondary);
+            font-size: 28px;
+            margin-top: 100px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            border-top: 1px solid #222;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-title { font-size: 56px; }
+            .gallery-grid { gap: 30px; padding: 0 20px; }
+            .gallery-item img, .gallery-item video { height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="loader-container">
+            <div class="simple-loader"></div>
+            <img src="logo.png" alt="OmniEdit X Studio Logo" class="preloader-logo">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="index.html"><img src="logo.png" alt="OmniEdit X Studio Logo" class="logo-img"></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="projects.html">Projects</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <h1 class="gallery-title">GALLERY</h1>
+        <div class="gallery-grid" id="gallery-grid">
+            <!-- Items loaded by JS -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        © 2025 OmniEdit X Studio. All rights reserved. | Proudly Created & Edited by Sajeeb Sarker, Bogura, Bangladesh
+    </footer>
+
+    <script>
+        // Preloader
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+            }, 800);
+        });
+
+        // Always show navbar
+        const navbar = document.getElementById('navbar');
+        navbar.style.transform = 'translateY(0)';
+
+        // Load Gallery Items
+        const items = JSON.parse(localStorage.getItem('gallery') || '[]');
+        const grid = document.getElementById('gallery-grid');
+
+        if (items.length === 0) {
+            grid.innerHTML = '<p class="no-items">No items in Gallery yet. Upload from Admin Panel.</p>';
+        } else {
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                const media = item.type === 'video' 
+                    ? `<video controls loop muted preload="metadata">
+                         <source src="${item.url}" type="${item.mime || 'video/mp4'}">
+                         Your browser does not support the video tag.
+                       </video>`
+                    : `<img src="${item.url}" alt="${item.title}">`;
+                div.innerHTML = `
+                    ${media}
+                    <h3>${item.title}</h3>
+                    <p>${item.details}</p>
+                `;
+                grid.appendChild(div);
+            });
+
+            // Hover play for videos
+            document.querySelectorAll('video').forEach(video => {
+                video.addEventListener('mouseenter', () => video.play());
+                video.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                });
+            });
+        }
+    </script>
+
+</body>
+</html>

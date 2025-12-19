@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Manage | OmniEdit X Studio</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --text: #ffffff;
+            --accent: #00d4ff;
+            --secondary: #b0b0b0;
+            --card: rgba(20, 20, 30, 0.6);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .simple-loader {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 8px solid rgba(0, 212, 255, 0.2);
+            border-top: 8px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .preloader-logo {
+            height: 130px;
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+            transition: transform 0.5s ease-in-out;
+            transform: translateY(-100%);
+        }
+        nav.visible {
+            transform: translateY(0);
+        }
+        .logo-img {
+            height: 50px;
+            transition: transform 0.4s ease;
+        }
+        .logo-img:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            margin-left: 40px;
+            font-size: 18px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.4s ease;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -6px;
+            left: 0;
+            background: var(--accent);
+            transition: width 0.4s ease;
+        }
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Admin Section */
+        .admin-section {
+            flex: 1;
+            padding: 150px 20px 100px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .admin-title {
+            font-size: 82px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #ffffff, var(--accent), #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1.2s ease forwards 0.5s, breathe 5s ease-in-out infinite 2s;
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes breathe {
+            0%, 100% { text-shadow: 0 0 25px rgba(0, 212, 255, 0.5); }
+            50% { text-shadow: 0 0 60px rgba(0, 212, 255, 1); }
+        }
+        .manage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 50px;
+            max-width: 1200px;
+            margin: 60px auto;
+        }
+        .manage-card {
+            background: var(--card);
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.8s ease;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(60px);
+            animation: fadeInUp 1s ease forwards;
+        }
+        .manage-card:nth-child(1) { animation-delay: 0.8s; }
+        .manage-card:nth-child(2) { animation-delay: 1s; }
+        .manage-card:hover {
+            transform: translateY(-30px);
+            border-color: var(--accent);
+            box-shadow: 0 40px 80px rgba(0, 212, 255, 0.5);
+        }
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .item-card {
+            background: rgba(10, 10, 15, 0.8);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: 0.6s;
+        }
+        .item-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
+            border-color: var(--accent);
+        }
+        .item-media {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        .item-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .edit-btn, .delete-btn {
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.5s;
+        }
+        .edit-btn {
+            background: transparent;
+            color: var(--accent);
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 30px rgba(0,212,255,0.3);
+        }
+        .edit-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 50px rgba(0,212,255,0.7);
+            transform: translateY(-5px);
+        }
+        .delete-btn {
+            background: transparent;
+            color: #ff4444;
+            border: 3px solid #ff4444;
+            box-shadow: 0 0 30px rgba(255,68,68,0.3);
+        }
+        .delete-btn:hover {
+            background: #ff4444;
+            color: var(--bg);
+            box-shadow: 0 0 50px rgba(255,68,68,0.7);
+            transform: translateY(-5px);
+        }
+
+        /* Footer */
+        footer {
+            padding: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            border-top: 1px solid #222;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="loader-container">
+            <div class="simple-loader"></div>
+            <img src="logo.png" alt="OmniEdit X Studio Logo" class="preloader-logo">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="index.html"><img src="logo.png" alt="OmniEdit X Studio Logo" class="logo-img"></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="projects.html">Projects</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Admin Manage Section -->
+    <section class="admin-section">
+        <h1 class="admin-title">ADMIN MANAGE</h1>
+        <div class="manage-grid">
+            <div class="manage-card">
+                <h3 style="color: var(--accent);">Gallery Items</h3>
+                <div class="item-grid" id="gallery-list"></div>
+            </div>
+            <div class="manage-card">
+                <h3 style="color: var(--accent);">Projects Items</h3>
+                <div class="item-grid" id="projects-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        © 2025 OmniEdit X Studio. All rights reserved. | Proudly Created & Edited by Sajeeb Sarker, Bogura, Bangladesh
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Preloader
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+            }, 800);
+        });
+
+        // Navbar
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > 0) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+        });
+
+        // Load items
+        function loadItems(type) {
+            const items = JSON.parse(localStorage.getItem(type) || '[]');
+            const list = document.getElementById(type + '-list');
+            list.innerHTML = '';
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                const media = item.type === 'video' 
+                    ? `<video controls class="item-media"><source src="${item.url}" type="video/mp4"></video>`
+                    : `<img src="${item.url}" class="item-media" alt="${item.title}">`;
+                div.innerHTML = `
+                    ${media}
+                    <h3>${item.title}</h3>
+                    <p>${item.details}</p>
+                    <div class="item-actions">
+                        <button class="edit-btn" onclick="editItem('${type}', ${index})">Edit</button>
+                        <button class="delete-btn" onclick="deleteItem('${type}', ${index})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function editItem(type, index) {
+            const items = JSON.parse(localStorage.getItem(type) || '[]');
+            const item = items[index];
+            const newTitle = prompt("Edit Title:", item.title);
+            const newDetails = prompt("Edit Details:", item.details);
+            if (newTitle !== null) item.title = newTitle;
+            if (newDetails !== null) item.details = newDetails;
+            localStorage.setItem(type, JSON.stringify(items));
+            loadItems(type);
+        }
+
+        function deleteItem(type, index) {
+            if (confirm("Delete this item?")) {
+                const items = JSON.parse(localStorage.getItem(type) || '[]');
+                items.splice(index, 1);
+                localStorage.setItem(type, JSON.stringify(items));
+                loadItems(type);
+            }
+        }
+
+        loadItems('gallery');
+        loadItems('projects');
+    </script>
+</body>
+</html>
