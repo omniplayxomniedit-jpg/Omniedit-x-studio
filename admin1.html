@@ -227,30 +227,6 @@
             box-shadow: 0 0 80px rgba(0, 212, 255, 0.9);
         }
 
-        /* New: Progress Indicator */
-        .progress-container {
-            margin: 30px 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
-            overflow: hidden;
-            display: none;
-        }
-        .progress-bar {
-            height: 30px;
-            width: 0%;
-            background: linear-gradient(90deg, var(--accent), #00ffff);
-            border-radius: 15px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.8);
-        }
-        .progress-text {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 20px;
-            color: var(--accent);
-        }
-
         /* Footer */
         footer {
             padding: 50px;
@@ -302,11 +278,6 @@
                     <label for="gallery-file">File (Image/Video)</label>
                     <input type="file" id="gallery-file" accept="image/*,video/*">
                 </div>
-                <!-- Progress for Gallery -->
-                <div class="progress-container" id="gallery-progress-container">
-                    <div class="progress-bar" id="gallery-progress-bar"></div>
-                </div>
-                <div class="progress-text" id="gallery-progress-text">0% - Ready</div>
                 <button class="submit-btn" onclick="upload('gallery')">Upload to Gallery</button>
             </div>
             <div class="upload-card">
@@ -323,11 +294,6 @@
                     <label for="projects-file">File (Image/Video)</label>
                     <input type="file" id="projects-file" accept="image/*,video/*">
                 </div>
-                <!-- Progress for Projects -->
-                <div class="progress-container" id="projects-progress-container">
-                    <div class="progress-bar" id="projects-progress-bar"></div>
-                </div>
-                <div class="progress-text" id="projects-progress-text">0% - Ready</div>
                 <button class="submit-btn" onclick="upload('projects')">Upload to Projects</button>
             </div>
         </div>
@@ -347,7 +313,7 @@
             }, 800);
         });
 
-        // Navbar scroll hide
+        // Navbar
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', function() {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -358,69 +324,37 @@
             }
         });
 
-        // Upload with progress
+        // Upload function - saves only filename
         function upload(type) {
             const title = document.getElementById(type + '-title').value.trim();
             const details = document.getElementById(type + '-details').value.trim();
             const file = document.getElementById(type + '-file').files[0];
 
             if (!title || !details || !file) {
-                alert('Please fill all fields and select a file');
+                alert('Please fill title, details, and select a file');
                 return;
             }
 
-            const progressContainer = document.getElementById(type + '-progress-container');
-            const progressBar = document.getElementById(type + '-progress-bar');
-            const progressText = document.getElementById(type + '-progress-text');
-
-            progressContainer.style.display = 'block';
-            progressBar.style.width = '0%';
-            progressText.textContent = '0% - Starting...';
-
-            const reader = new FileReader();
-            const startTime = Date.now();
-
-            reader.onprogress = (e) => {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    progressBar.style.width = percent + '%';
-                    const elapsed = (Date.now() - startTime) / 1000;
-                    const speed = e.loaded / elapsed;
-                    const remaining = (e.total - e.loaded) / speed;
-                    progressText.textContent = `${percent}% - ~${remaining.toFixed(1)}s remaining`;
-                }
+            const item = {
+                title: title,
+                details: details,
+                filename: file.name,
+                type: file.type.startsWith('video') ? 'video' : 'image',
+                mime: file.type
             };
 
-            reader.onload = (e) => {
-                const item = {
-                    title,
-                    details,
-                    url: e.target.result,
-                    type: file.type.startsWith('video') ? 'video' : 'image',
-                    mime: file.type
-                };
-                let data = JSON.parse(localStorage.getItem(type) || '[]');
-                data.push(item);
-                localStorage.setItem(type, JSON.stringify(data));
+            let data = JSON.parse(localStorage.getItem(type) || '[]');
+            data.push(item);
+            localStorage.setItem(type, JSON.stringify(data));
 
-                progressBar.style.width = '100%';
-                progressText.textContent = '100% - Complete!';
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    alert('Uploaded successfully!');
-                    document.getElementById(type + '-title').value = '';
-                    document.getElementById(type + '-details').value = '';
-                    document.getElementById(type + '-file').value = '';
-                }, 600);
-            };
+            alert('Saved successfully!\nNow manually copy "' + file.name + '" into the "videos/" folder.');
 
-            reader.onerror = () => {
-                alert('Upload failed');
-                progressContainer.style.display = 'none';
-            };
-
-            reader.readAsDataURL(file);
+            // Clear form
+            document.getElementById(type + '-title').value = '';
+            document.getElementById(type + '-details').value = '';
+            document.getElementById(type + '-file').value = '';
         }
     </script>
+
 </body>
 </html>
